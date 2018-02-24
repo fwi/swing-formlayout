@@ -217,6 +217,9 @@ public class AddressBookDemo {
 	/* *** static utility methods *** */
 
 	public static SimpleFormBuilder formatLabel(SimpleFormBuilder fb) {
+		// Do not shrink the labels, keep fixed width.
+		// The "Address 2" and "Street & house number" fields have different (amount of) components,
+		// they will not align with the other label-fields when labels shrink. 
 		fb.withDefaultSize().shrinkx(1);
 		return fb;
 	}
