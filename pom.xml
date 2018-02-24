@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.fwi</groupId>
 	<artifactId>swing-formlayout</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<url>https://github.com/fwi/swing-formlayout</url>
 	<properties>
