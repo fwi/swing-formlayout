@@ -8,6 +8,10 @@ A form-builder is included to assist in building the hierarchical tree of compon
 
 A previous version of this layout manager (including some more Swing goodies) can be found at the [HVLayout](https://github.com/fwi/HVLayout) repository.
 
+Alternatives:
+  - [JGoodies FormLayout](http://www.jgoodies.com/freeware/libraries/forms/)
+  - [MigLayout](http://www.miglayout.com/)
+
 **Screenshots**
 
 In the `src/test/java` directory you will find a number of runnable classes that demo the form layout-manager. Following screenshots are from the `AddressBookDemo`.
