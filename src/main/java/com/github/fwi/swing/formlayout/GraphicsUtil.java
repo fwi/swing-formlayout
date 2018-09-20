@@ -14,11 +14,14 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.FontUIResource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +71,14 @@ public class GraphicsUtil {
 		System.setProperty("java.awt.smartInvalidate", Boolean.toString(beSmart));
 	}
 
+	/**
+	 * Sets the look and feel to OS L&F, "Nimbus" L&F or Cross-Platform L&F in that order.
+	 * <b>Warning</b>: once any frame/window is displayed, changing the L&F will never work properly
+	 * and has all kinds of weird "caching" issues. An application restart is required to get a different
+	 * L&F working properly. In case of Nimbus L&F, even changing default font size does not work properly
+	 * (due to similar caching issues) and default font-sizes have to be set before any frame/window is displayed.
+	 * @return the name of the L&F set.
+	 */
 	public static String setDefaultLookAndFeel() {
 
 		String sysPropLaf = System.getProperty("swing.defaultlaf");
@@ -150,6 +161,7 @@ public class GraphicsUtil {
 
 	/**
 	 * Resize all fonts given the factor. Requires a UI update to show.
+	 * <br>Warning</b>: Nimbus L&F only partially updates, default font-size has to be set before displaying any frame/window. 
 	 * @param resizeFactor grows or shrinks font-sizes according to the given factor, see {@link #getResizeFontFactor(int)}.
 	 */
 	public static void resizeApplicationFont(float resizeFactor) {
@@ -158,6 +170,7 @@ public class GraphicsUtil {
 		Enumeration<Object> enumer = UIManager.getDefaults().keys();
 		// UIManager uses lazy initialization, already processed keys return in the enumeration.
 		Set<Object> processedKeys = new HashSet<>();
+		List<Object> updatedFonts = new LinkedList<>();
 		while(enumer.hasMoreElements()) {
 			Object key = enumer.nextElement();
 			if (processedKeys.contains(key)) {
@@ -165,12 +178,22 @@ public class GraphicsUtil {
 			}
 			processedKeys.add(key);
 			Object value = UIManager.get(key);
-			if (value instanceof Font) {
+			Font resizedFont = null;
+			if (value instanceof FontUIResource) {
+				FontUIResource originalFont = (FontUIResource) value;
+				resizedFont = new FontUIResource(originalFont.deriveFont(originalFont.getSize2D() * resizeFactor));
+			} else if (value instanceof Font) {
 				Font originalFont = (Font) value;
-				// log.info(key + " font size " + originalFont.getSize2D());
-				Font resizedFont = originalFont.deriveFont(originalFont.getSize() * resizeFactor);
-				UIManager.put(key, new javax.swing.plaf.FontUIResource(resizedFont));
+				resizedFont = originalFont.deriveFont(originalFont.getSize2D() * resizeFactor);
 			}
+			if (resizedFont != null) {
+				// log.debug(key + "  \t " + value.getClass().getName() + " \t " + ((Font)value).getSize2D());
+				updatedFonts.add(key);
+				updatedFonts.add(resizedFont);
+			}
+		}
+		if (updatedFonts.size() > 0) {
+			UIManager.getDefaults().putDefaults(updatedFonts.toArray(new Object[updatedFonts.size()]));
 		}
 	}
 

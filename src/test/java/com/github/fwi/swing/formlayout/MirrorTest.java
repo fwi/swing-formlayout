@@ -44,10 +44,12 @@ public class MirrorTest {
 		});
 	}
 
-	FormGraphics formGraphics = new FormGraphics();
+	FormGraphics formGraphics;
 
 	void buildAndShowWindow() {
 
+		formGraphics = new FormGraphics();
+		
 		frame = new JFrame("Mirror test");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		

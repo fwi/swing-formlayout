@@ -6,10 +6,12 @@ import java.awt.Container;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -18,14 +20,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fwi.swing.formlayout.AbstractBox;
-import com.github.fwi.swing.formlayout.FormGraphics;
-import com.github.fwi.swing.formlayout.GraphicsUtil;
-import com.github.fwi.swing.formlayout.PageBox;
 import com.github.fwi.swing.formlayout.builder.SimpleFormBuilder;
 
 /**
@@ -51,7 +51,7 @@ public class AddressBookDemo {
 	void display() {
 
 		String laf = GraphicsUtil.setDefaultLookAndFeel();
-		log.debug(laf);
+		log.debug("Initial Look and Feel set to " + laf);
 		GraphicsUtil.resizeTitledBorderFont(0.85f);
 		build();
 		show();
@@ -61,11 +61,14 @@ public class AddressBookDemo {
 			"Coyote, Wile", "Devil, Tasmanian", "Duck, Daffy", "Fudd, Elmer",
 			"Le Pew, Pepé", "Martian, Marvin" };
 
-	FormGraphics formGraphics = new FormGraphics();
+	FormGraphics formGraphics;
 	JList<String> namesList;
 
 	void build() {
 
+		// create formGraphics after setting look and feel, 
+		// or call formGraphics.init() after setting look and feel.
+		formGraphics = new FormGraphics();
 		// formGraphics.hgap = 25;
 
 		frame = new JFrame("Addres book demo");
@@ -81,6 +84,12 @@ public class AddressBookDemo {
 		JCheckBox useBigFont;
 		form.add(useBigFont = new JCheckBox("Use big font")).withDefaultSize();
 		setBigFontActions(useBigFont);
+		// Changing L&F after a frame is displayed does not work properly in Java Swing.
+		// There are all kinds of "caching" issues, this is best-effort only and will probably never work properly.
+		JComboBox<String> lookAndFeel;
+		form.add(lookAndFeel = new JComboBox<String>(getLFNames())).withDefaultSize();
+		setLFActions(lookAndFeel);
+		
 
 		form.up().addLineBox();
 		form.withTitledBorder("Main line box");
@@ -110,7 +119,10 @@ public class AddressBookDemo {
 		// There are two text-fields instead of one, they need to shrink a bit more to fit within the model-box at minimum size.
 		formatLabel(form.add(label));
 		formatTextField(form.add(getTextField("Dust Drive"))).sizex(1.5).shrinkx(4);
-		form.add(new JTextField("42")).sizex(0.5).growx(2).shrinkx(2);
+		// Align textfields with numbers in opposite direction
+		JTextField streetNumber = new JTextField("42");
+		streetNumber.setHorizontalAlignment(SwingConstants.TRAILING);
+		form.add(streetNumber).sizex(0.5).growx(2).shrinkx(2);
 		/*
 		 * We need a mirror-box here to keep the street-line from expanding all the way to the right.
 		 * Mirror-boxes require a stand-alone box to mimic, 
@@ -213,8 +225,52 @@ public class AddressBookDemo {
 			frame.pack();
 		});
 	}
+	
+	void resetAndUpdateFrameUI() {
+		
+		formGraphics.init(); // this will update default height and width used in the form
+		SwingUtilities.updateComponentTreeUI(frame);
+		frame.pack();
+	}
+	
+	void setLFActions(JComboBox<String> b) {
+		setCurrentLF(b);
+		b.addActionListener((ActionEvent e) -> {
+			String lfName = (String) b.getSelectedItem();
+			LookAndFeelInfo lafi = getLFByName(lfName);
+			try {
+				UIManager.setLookAndFeel(lafi.getClassName());
+				log.debug("Look and Feel set to " + lafi.getClassName());
+				// changing look and feel requires a frame dispose to remove old UI resources
+				frame.dispose();
+				resetAndUpdateFrameUI();
+				frame.setVisible(true);
+			} catch (Exception lafe) {
+				log.debug("Failed to set L&F", lafe);
+			}
+			setCurrentLF(b);
+		});
+	}
+	
+	void setCurrentLF(JComboBox<String> b) {
+		b.setSelectedItem(UIManager.getLookAndFeel().getName());
+	}
 
 	/* *** static utility methods *** */
+
+	public static LookAndFeelInfo getLFByName(String lfName) {
+		
+		for (LookAndFeelInfo laf : UIManager.getInstalledLookAndFeels()) {
+			if (laf.getName().equals(lfName)) {
+				return laf;
+			}
+		}
+		return null;
+	}
+
+	public static String[] getLFNames() {
+		return Arrays.stream(UIManager.getInstalledLookAndFeels()).map(e -> e.getName()).toArray(size -> new String[size]);
+	}
 
 	public static SimpleFormBuilder formatLabel(SimpleFormBuilder fb) {
 		// Do not shrink the labels, keep fixed width.
