@@ -18,10 +18,6 @@ import javax.swing.event.ListSelectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fwi.swing.formlayout.AbstractBox;
-import com.github.fwi.swing.formlayout.FormGraphics;
-import com.github.fwi.swing.formlayout.GraphicsUtil;
-import com.github.fwi.swing.formlayout.PageBox;
 import com.github.fwi.swing.formlayout.builder.SimpleFormBuilder;
 
 public class FontSizeWindow implements ActionListener, ListSelectionListener {

@@ -17,12 +17,6 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fwi.swing.formlayout.FormConstraints;
-import com.github.fwi.swing.formlayout.FormGraphics;
-import com.github.fwi.swing.formlayout.GraphicsUtil;
-import com.github.fwi.swing.formlayout.LineBox;
-import com.github.fwi.swing.formlayout.PageBox;
-
 // TODO: Add checkbox to switch to small / normal / big font.
 
 public class FormWindow {

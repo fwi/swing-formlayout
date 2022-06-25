@@ -13,10 +13,6 @@ import javax.swing.SwingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fwi.swing.formlayout.ComponentSizes;
-import com.github.fwi.swing.formlayout.FormGraphics;
-import com.github.fwi.swing.formlayout.FormLayoutManager;
-
 /**
  * Alternative to {@link FormLayoutManager}
  * that calculates sizes relative to how much components want to grow or shrink.

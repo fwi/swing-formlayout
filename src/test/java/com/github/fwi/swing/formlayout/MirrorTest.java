@@ -12,14 +12,6 @@ import javax.swing.border.LineBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.fwi.swing.formlayout.AbstractBox;
-import com.github.fwi.swing.formlayout.FormConstraints;
-import com.github.fwi.swing.formlayout.FormGraphics;
-import com.github.fwi.swing.formlayout.GraphicsUtil;
-import com.github.fwi.swing.formlayout.LineBox;
-import com.github.fwi.swing.formlayout.MirrorBox;
-import com.github.fwi.swing.formlayout.PageBox;
-
 public class MirrorTest {
 
 	private static final Logger log = LoggerFactory.getLogger(MirrorTest.class);

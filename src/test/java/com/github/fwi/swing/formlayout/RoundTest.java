@@ -1,7 +1,5 @@
 package com.github.fwi.swing.formlayout;
 
-import com.github.fwi.swing.formlayout.FormGraphics;
-
 public class RoundTest {
 
 	public static void main(String[] args) {
